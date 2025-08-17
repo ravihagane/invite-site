@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inner Engineering – Personal Invitation</title>
+<!--
+  This version of the invitation page tones down the corporate look of the
+  original template to create a warmer, more personal feel. The palette has
+  been shifted to soft pastel colours and the typography has been relaxed
+  with a rounded sans‑serif font. Elements that felt formal, like the
+  prominent logo and heavy borders, have been reduced or removed. The core
+  functionality remains the same: users can craft a personalised message,
+  export a high‑resolution poster, or share the invitation via WhatsApp.
+-->
+
+<!-- Import a friendly, rounded typeface -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@400;700&family=Noto+Serif+Telugu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Pastel palette for a softer mood */
+    --bg: #fdfafa;
+    --paper: #ffffff;
+    --ring: #e8e6f0;
+    --brand: #f2a541;
+    --accent: #f8cba6;
+    --ink: #20232a;
+    --muted: #6e6c7a;
+    --chip: #fff7ea;
+    --gx: 48px;
+    --gradA: #fff7ee;
+    --gradB: #fdf2ff;
+    --gradC: #f7faff;
+    --footerA: #fef9f3;
+    --footerB: #faf3fe;
+    --ctaA: #fff6e8;
+    --ctaB: #ffe9d6;
+    --ctaInk: #3a2d1e;
+    --ctaBorder: #f2dbc3;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Poppins, Inter, system-ui, "Noto Serif Telugu", sans-serif;
+    line-height: 1.5;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  .hero {
+    padding: 16px;
+    border-bottom: 1px solid var(--ring);
+    background: linear-gradient(135deg, var(--gradA), var(--gradC));
+    text-align: center;
+  }
+  .title {
+    margin: 0;
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 700;
+  }
+  .sub {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 16px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 480px 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  @media (max-width: 1000px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--ring);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 12px 0 4px;
+  }
+  input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #dcd7e9;
+    background: #ffffff;
+    font: inherit;
+    outline-color: var(--brand);
+  }
+  textarea {
+    min-height: 110px;
+    resize: vertical;
+  }
+  .hint {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: right;
+  }
+  .btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .btn {
+    appearance: none;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    background: var(--brand);
+    transition: background 0.15s ease;
+  }
+  .btn:hover { background: #e69132; }
+  .btn.alt { background: #4b5563; }
+  .btn.alt:hover { background: #374151; }
+  .btn.whatsapp { background: #25d366; }
+  .btn.whatsapp:hover { background: #1bb85b; }
+  .stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background: #fafafa;
+    border-radius: 20px;
+    border: 1px dashed #e5e5ea;
+    overflow: auto;
+  }
+  /* Poster 1080x1350 */
+  .poster-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .poster {
+    width: 1080px;
+    height: 1350px;
+    border-radius: 28px;
+    border: 1px solid var(--ring);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    background: linear-gradient(180deg, var(--gradA), var(--gradB), var(--gradC));
+  }
+  .frame {
+    position: absolute;
+    left: var(--gx);
+    right: var(--gx);
+    top: var(--gx);
+    bottom: var(--gx);
+    border: 2px solid #e2dff2;
+    border-radius: 24px;
+    pointer-events: none;
+  }
+  .block { z-index: 2; margin-left: var(--gx); margin-right: var(--gx); }
+  header.poster-head {
+    padding-top: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+  /* Replace the corporate brand mark with a simple heart icon */
+  .brand-mark {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: var(--brand);
+    font-weight: 900;
+    font-size: 28px;
+    background: linear-gradient(145deg, #ffe2c2, #ffcda3);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+  }
+  .poster-title {
+    line-height: 1.15;
+  }
+  .poster-title .top {
+    /* Make the personal invitation line the largest (U1) */
+    font-size: 36px;
+    color: #5a4161;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+  .poster-title h2 {
+    margin: 8px 0 0;
+    /* Make programme name smaller (U3) */
+    font-size: 28px;
+  }
+  .chip {
+    display: inline-flex;
+    border: 1px solid var(--ring);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-weight: 700;
+    font-size: 14px;
+    background: var(--chip);
+    margin-top: 8px;
+    color: var(--brand);
+  }
+  .ribbon {
+    margin-top: 16px;
+    border: 1px solid #eedbed;
+    border-radius: 18px;
+    padding: 16px;
+    background: linear-gradient(90deg, #fff4ef, #f9f1fe);
+    font-size: 24px;
+    text-align: center;
+    color: #6a4c93;
+  }
+
+  /* QR code container inside the poster */
+  .qr {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+  }
+  .qr img {
+    width: 160px;
+    height: 160px;
+  }
+  .meditation {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0.08;
+  }
+  .letter {
+    margin-top: 16px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid var(--ring);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    /* Increase letter container height for longer messages */
+    min-height: 460px;
+    max-height: 580px;
+  }
+  .letter h3 {
+    margin: 0 0 6px 0;
+    font-size: 32px;
+    text-align: left;
+    color: #68445c;
+    font-weight: 700;
+  }
+  .letter p {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.56;
+    text-align: left;
+    hyphens: auto;
+    word-break: break-word;
+    color: #2f334a;
+  }
+  .sig {
+    text-align: right;
+    font-weight: 700;
+    font-size: 24px;
+    margin-top: auto;
+    color: #68445c;
+  }
+  .quote {
+    margin-top: 16px;
+    background: #6a94b2;
+    color: #fff;
+    border-radius: 18px;
+    padding: 16px;
+    font-size: 22px;
+    text-align: center;
+  }
+  .cta-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 14px;
+  }
+  /* Layout for CTA and QR code side by side */
+  .cta-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    margin-top: 14px;
+  }
+  .cta-row .qr img {
+    /* Slightly smaller QR to save space */
+    width: 120px;
+    height: 120px;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(180deg, var(--ctaA), var(--ctaB));
+    border: 1px solid var(--ctaBorder);
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--ctaInk);
+    text-align: center;
+  }
+  .cta .label { opacity: 0.9; }
+  .cta .link {
+    font-weight: 800;
+    color: #4a3e91;
+    text-decoration: none;
+  }
+  .footer {
+    margin-top: 16px;
+    margin-bottom: 38px;
+    display: grid;
+    gap: 12px;
+  }
+  .venue {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border: 1px solid var(--ring);
+    border-radius: 16px;
+    padding: 14px;
+    background: linear-gradient(180deg, var(--footerA), var(--footerB));
+  }
+  .venue strong {
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #99c2ff;
+    margin-top: 8px;
+  }
+  .fine {
+    color: #4a5166;
+    white-space: pre-line;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .note {
+    font-size: 16px;
+    color: #6b5b95;
+    text-align: center;
+  }
+  .telugu {
+    font-family: "Noto Serif Telugu", serif;
+  }
+</style>
+</head>
+<body>
+  <section class="hero">
+    <h1 class="title">Create Your Personal Invitation</h1>
+    <p class="sub">Customise a warm, heartfelt invitation for someone special.</p>
+  </section>
+  <div class="container">
+    <div class="grid">
+      <section class="card">
+        <label>Language</label>
+        <select id="lang" onchange="updatePoster()">
+          <option value="en" selected>English</option>
+          <option value="te">తెలుగు</option>
+        </select>
+
+        <label style="margin-top:10px">To</label>
+        <input id="to" placeholder="Friend" oninput="updatePoster()" />
+        <label>From</label>
+        <input id="from" placeholder="Your name" oninput="updatePoster()" />
+
+        <!-- Sample message selector -->
+        <label>Sample Message</label>
+        <select id="sampleMessage" onchange="applySample()">
+          <option value="" selected>Select a sample...</option>
+          <option value="0">Sample 1</option>
+          <option value="1">Sample 2</option>
+          <option value="2">Sample 3</option>
+          <option value="3">Sample 4</option>
+          <option value="4">Sample 5</option>
+          <option value="5">Sample 6</option>
+          <option value="6">Sample 7</option>
+        </select>
+        <label style="margin-top:10px">Message</label>
+        <textarea id="message" maxlength="520" oninput="updatePoster()">I care about you deeply. I’m inviting you to the Inner Engineering 7‑day programme. It’s a gentle toolkit to bring clarity, balance and joy to daily life. I’d love for you to experience this.</textarea>
+        <div class="hint"><span id="count">0</span>/520</div>
+
+        <label>Footer Title</label>
+        <input id="venueTitle" value="Programme Details • Kurnool" oninput="updatePoster()" />
+
+        <label>Footer Text</label>
+        <textarea id="venue" maxlength="320" oninput="updatePoster()">Inner Engineering (7‑Day Programme)
+Sep 10–16
+Language: Telugu
+Venue:
+S.V. Complex, Conference Hall
+RS Road, near SBI Circle, Kurnool
+Contact: 9663655003, 8499980150</textarea>
+
+        <div class="btns">
+          <button class="btn" onclick="updatePoster()">Update Preview</button>
+          <button class="btn alt" onclick="downloadPNG()">Download Poster (PNG)</button>
+          <button class="btn whatsapp" onclick="shareWhatsApp()">WhatsApp (Text)</button>
+          <button class="btn whatsapp" onclick="shareWhatsAppPNG()">WhatsApp (PNG + Caption)</button>
+        </div>
+      </section>
+      <section class="card stage">
+        <div class="poster-wrap">
+          <div class="poster" id="poster">
+            <!-- Subtle background illustration -->
+            <div class="meditation" aria-hidden="true">
+              <svg width="820" height="820" viewBox="0 0 820 820" fill="none">
+                <g stroke="#a39fc0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0.4">
+                  <circle cx="410" cy="230" r="38"></circle>
+                  <path d="M410 268c-10 20-24 44-24 84 0 32 16 64 24 72 8-8 24-40 24-72 0-40-14-64-24-84z"></path>
+                  <path d="M330 410c26 20 52 30 80 30s54-10 80-30"></path>
+                  <path d="M300 450c52 34 108 34 160 0"></path>
+                  <path d="M240 540q80-60 170-26 90-34 170 26"></path>
+                  <path d="M220 580q94-70 190-40 96-30 190 40"></path>
+                  <path d="M180 620q120-80 230-56 110-24 230 56"></path>
+                </g>
+              </svg>
+            </div>
+            <div class="frame"></div>
+            <header class="poster-head block">
+              <div class="brand-mark">♥</div>
+              <div class="poster-title">
+                <!-- The order of the heading lines has been inverted: a personal invitation goes on top, followed by the programme name. -->
+                <div class="top telugu" id="topline">వ్యక్తిగత ఆహ్వానం</div>
+                <h2 id="head" class="telugu">ఇన్నర్ ఇంజినీరింగ్ • 7‑రోజుల కార్యక్రమం</h2>
+                <span class="chip" id="chip">TELUGU</span>
+              </div>
+            </header>
+            <div class="block ribbon">
+              <!-- Tagline conveys care; updated to a more personal line -->
+              <strong id="ribbon-1">A Letter For Care of Loved one</strong>
+            </div>
+            <article class="block letter">
+              <h3 id="letter-to">Dear Friend,</h3>
+              <p id="letter-body">...</p>
+              <div class="sig" id="letter-from">— With love, Your Name</div>
+            </article>
+            <div class="block quote" id="quote-box">“Inner Engineering is a technology for wellbeing.” — Sadhguru</div>
+            <!-- CTA and QR code aligned in one row (QR on the left) -->
+            <div class="block cta-row">
+              <div class="qr"><img id="qr" src="https://quickchart.io/qr?text=https%3A%2F%2Fisha.co%2Fieknl&size=200" alt="QR code for registration" crossorigin="anonymous"></div>
+              <div class="cta"><span class="label">Register now:</span> <a href="https://isha.co/ieknl" class="link" target="_blank" rel="noopener">isha.co/ieknl</a></div>
+            </div>
+            <div class="block footer">
+              <div class="venue">
+                <div class="dot"></div>
+                <div>
+                  <strong id="venue-title">Programme Details • Kurnool</strong>
+                  <div id="venue-text" class="fine">Inner Engineering (7‑Day Programme)
+Venue: S.V. Complex, Conference Hall, RS Road, near SBI Circle, Kurnool
+Dates: Sep 10–16
+Language: Telugu
+Register: Isha.co/ieknl
+Contact: 9663655003, 8499980150</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+// Predefined sample messages in English and Telugu. The order of messages
+// corresponds to the options presented in the sample selector. When the
+// language switches, applySample() reads from the appropriate array.
+// Seven predefined messages in English emphasising shared moments and life improvement.
+const samplesEn = [
+  "We’ve shared many beautiful moments. I invite you to Inner Engineering to gain simple tools for balance and joy.",
+  "Our time together means a lot. Inner Engineering helped me bring clarity to life. I think it will enhance your days.",
+  "I care about your well‑being. This programme offers simple practices for inner peace and happiness.",
+  "Your presence enriches my life. Inner Engineering gave me a steady mind. I’d like you to experience this warmth.",
+  "We have enjoyed good times together. I invite you to explore Inner Engineering for steady calm and better health.",
+  "I value our bond. Inner Engineering improved my daily life. I hope you find the same ease and clarity.",
+  "Our relationship is special. Inner Engineering shares ways to build inner balance and a brighter outlook."
+];
+// Seven predefined messages in Telugu with similar tone.
+const samplesTe = [
+  "మనిద్దరం అనేక చక్కని క్షణాలు గడిపాము. సమతా, ఆనందానికి సరళమైన సాధనలను అందించే Inner Engineering కు మిమ్మల్ని ఆహ్వానిస్తున్నాను.",
+  "మన సమయం ఎంతో ముఖ్యం. Inner Engineering నాకు జీవితం స్పష్టంగా ఉండడానికి సహాయపడింది. ఇది మీ రోజులను మెరుగుపరుస్తుందని అనుకుంటున్నాను.",
+  "నేను మీ శ్రేయస్సును కోరుకుంటున్నాను. ఈ కార్యక్రమం అంతరశాంతి, సంతోషానికి సరళమైన సాధనలను అందిస్తుంది.",
+  "మీ ఉనికి నా జీవితాన్ని పరిపూర్ణం చేస్తుంది. Inner Engineering నాకు స్థిరమైన మనసు ఇచ్చింది. మీరు కూడా ఈ ఉష్ణానుభూతిని అనుభవించాలి.",
+  "మేము కలిసి మంచి సమయాలు గడిపాము. స్థిరమైన ప్రశాంతత మరియు మెరుగైన ఆరోగ్యానికి Inner Engineering అనుభవించమని ఆహ్వానిస్తున్నాను.",
+  "మన బంధం విలువైనది. Inner Engineering నా రోజువారి జీవితాన్ని మెరుగుపరించింది. మీరు కూడా అదే సౌకర్యం, స్పష్టత పొందాలని ఆశిస్తున్నాను.",
+  "మన సంబంధం ప్రత్యేకం. అంతర్మనావస్థను సర్దుకునేందుకు మరియు ప్రకాశవంతమైన దృక్పథం కోసం Inner Engineering లో కొన్ని పద్ధతులు ఉన్నాయి."
+];
+
+// Update the message textarea based on the selected sample and current language
+function applySample() {
+  const select = document.getElementById('sampleMessage');
+  const index = select.value;
+  const lang = document.getElementById('lang').value;
+  if (index === "" || index == null) return;
+  const messageBox = document.getElementById('message');
+  if (lang === 'te') {
+    messageBox.value = samplesTe[parseInt(index, 10)];
+  } else {
+    messageBox.value = samplesEn[parseInt(index, 10)];
+  }
+  updatePoster();
+}
+function fitText(el, min, max){
+  el.style.fontSize = (max || 28) + 'px';
+  let guard = 0;
+  while (el.scrollHeight > el.clientHeight && guard < 50) {
+    const cur = parseFloat(getComputedStyle(el).fontSize);
+    const next = Math.max(min || 18, cur - 1);
+    el.style.fontSize = next + 'px';
+    guard++;
+    if (next === (min || 18)) break;
+  }
+}
+function updatePoster() {
+  const lang = document.getElementById('lang').value;
+  const to = document.getElementById('to').value.trim() || (lang === 'en' ? 'Friend' : 'మిత్రుడు');
+  const from = document.getElementById('from').value.trim() || (lang === 'en' ? 'Your Name' : 'మీ పేరు');
+  const msg = document.getElementById('message').value.trim();
+  const count = document.getElementById('count');
+  count.textContent = msg.length;
+  if (lang === 'te') {
+    // Place the personal invitation line first and the programme name below
+    document.getElementById('topline').textContent = 'వ్యక్తిగత ఆహ్వానం';
+    document.getElementById('head').textContent = 'ఇన్నర్ ఇంజినీరింగ్ • 7‑రోజుల కార్యక్రమం';
+    document.getElementById('chip').textContent = 'TELUGU';
+    document.getElementById('topline').classList.add('telugu');
+    document.getElementById('head').classList.add('telugu');
+    // Use the Telugu tagline – “A letter for the care of loved one”
+    document.getElementById('ribbon-1').textContent = 'ప్రియమైన వారి శ్రద్ధ కోసం లేఖ';
+    // Provide default footer values in Telugu
+    document.getElementById('venueTitle').value = 'కార్యక్రమ వివరాలు • కర్నూలు';
+    // Default footer in Telugu. Includes programme name, dates, language, venue, register link and contact.
+    document.getElementById('venue').value = 'ఇన్నర్ ఇంజినీరింగ్ (7-రోజుల కార్యక్రమం)\nసెప్టెంబర్ 10–16\nభాష: తెలుగు\nవేదిక:\nS.V. కాంప్లెక్స్, కాన్ఫరెన్స్ హాల్\nRS రోడ్, SBI సర్కిల్ దగ్గర, కర్నూల్\nసమాచారం కోసం సంప్రదించండి: 9663655003, 8499980150';
+  } else {
+    document.getElementById('topline').textContent = 'A Personal Invitation';
+    document.getElementById('head').textContent = 'Inner Engineering • 7‑Day Programme';
+    document.getElementById('chip').textContent = 'ENGLISH';
+    document.getElementById('topline').classList.remove('telugu');
+    document.getElementById('head').classList.remove('telugu');
+    // English tagline
+    document.getElementById('ribbon-1').textContent = 'A Letter For Care of Loved one';
+    // Provide default footer values in English
+    document.getElementById('venueTitle').value = 'Programme Details • Kurnool';
+    // Default footer in English. Includes programme name, dates, language, venue, register link and contact.
+    document.getElementById('venue').value = 'Inner Engineering (7‑Day Programme)\nSep 10–16\nLanguage: Telugu\nVenue:\nS.V. Complex, Conference Hall\nRS Road, near SBI Circle, Kurnool\nContact: 9663655003, 8499980150';
+  }
+  document.getElementById('letter-to').textContent = (lang === 'en' ? `Dear ${to},` : `ప్రియమైన ${to} గారికి,`);
+  const bodyEl = document.getElementById('letter-body');
+  bodyEl.textContent = msg;
+  document.getElementById('letter-from').textContent = (lang === 'en' ? `— With love, ${from}` : `— ప్రేమతో, ${from}`);
+  // Reflect the footer title and text in the poster
+  document.getElementById('venue-title').textContent = document.getElementById('venueTitle').value.trim() || (lang === 'en' ? 'Programme Details • Kurnool' : 'కార్యక్రమ వివరాలు • కర్నూలు');
+  document.getElementById('venue-text').textContent = document.getElementById('venue').value.trim();
+  fitText(bodyEl, 18, 28);
+}
+// Export the poster as a high resolution PNG
+async function downloadPNG(){
+  const source = document.getElementById('poster');
+  const clone = source.cloneNode(true);
+  const shell = document.createElement('div');
+  shell.style.position = 'fixed';
+  shell.style.left = '-20000px';
+  shell.style.top = '0';
+  shell.style.width = '1080px';
+  shell.style.height = '1350px';
+  shell.style.zIndex = '-1';
+  shell.appendChild(clone);
+  document.body.appendChild(shell);
+  clone.style.width = '1080px';
+  clone.style.height = '1350px';
+  await new Promise(r => requestAnimationFrame(r));
+  const canvas = await html2canvas(clone, {scale: 3, backgroundColor: null, width: 1080, height: 1350, windowWidth: 1080, windowHeight: 1350, scrollX: 0, scrollY: 0, useCORS: true});
+  const png = canvas.toDataURL('image/png');
+  document.body.removeChild(shell);
+  const a = document.createElement('a');
+  a.href = png;
+  a.download = `ie-invite-personalised.png`;
+  a.click();
+}
+// Share via WhatsApp by sending a text message with a link
+function shareWhatsApp(){
+  const to = (document.getElementById('to').value || 'Friend').trim();
+  const from = (document.getElementById('from').value || 'Your Name').trim();
+  // Use the selected message or a default message focused on shared moments and improvement
+  const msg = document.getElementById('message').value.trim() || "We’ve shared many beautiful moments. I invite you to Inner Engineering to gain simple tools for balance and joy.";
+  const venue = document.getElementById('venue').value.trim();
+  const title = document.getElementById('venueTitle').value.trim() || "Programme Details • Kurnool";
+  // Compose a message for WhatsApp. The link appears separately; the image itself cannot carry a hyperlink.
+  const text = `Inner Engineering • 7‑Day Programme — Invitation\n\nDear ${to},\n${msg}\n\n“Inner Engineering is a technology for wellbeing.” — Sadhguru\n\n${title}\n${venue}\n\nRegister: https://isha.co/ieknl\n\n— With love, ${from}`;
+  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+}
+
+// Share via WhatsApp by generating the PNG and using the Web Share API if available.
+async function shareWhatsAppPNG(){
+  // Generate a high‑resolution PNG of the poster
+  const source = document.getElementById('poster');
+  const clone = source.cloneNode(true);
+  const shell = document.createElement('div');
+  shell.style.position = 'fixed';
+  shell.style.left = '-20000px';
+  shell.style.top = '0';
+  shell.style.width = '1080px';
+  shell.style.height = '1350px';
+  shell.style.zIndex = '-1';
+  shell.appendChild(clone);
+  document.body.appendChild(shell);
+  clone.style.width = '1080px';
+  clone.style.height = '1350px';
+  await new Promise(r => requestAnimationFrame(r));
+  const canvas = await html2canvas(clone, {scale: 3, backgroundColor: null, width: 1080, height: 1350, windowWidth: 1080, windowHeight: 1350, scrollX: 0, scrollY: 0, useCORS: true});
+  const pngDataUrl = canvas.toDataURL('image/png');
+  document.body.removeChild(shell);
+  // Compose the caption text
+  const to = (document.getElementById('to').value || 'Friend').trim();
+  const from = (document.getElementById('from').value || 'Your Name').trim();
+  // Fallback message if none provided. Keep it aligned with the first sample message.
+  const msg = document.getElementById('message').value.trim() || "We’ve shared many beautiful moments. I invite you to Inner Engineering to gain simple tools for balance and joy.";
+  const venue = document.getElementById('venue').value.trim();
+  const title = document.getElementById('venueTitle').value.trim() || "Programme Details • Kurnool";
+  const caption = `Inner Engineering • 7‑Day Programme — Invitation\n\nDear ${to},\n${msg}\n\n${title}\n${venue}\n\nRegister: https://isha.co/ieknl\n\n— With love, ${from}`;
+  // Convert the data URL to a File object
+  const response = await fetch(pngDataUrl);
+  const blob = await response.blob();
+  const file = new File([blob], 'ie-invite.png', { type: 'image/png' });
+  // Attempt to use the Web Share API with a file and caption
+  if (navigator.canShare && navigator.canShare({ files: [file], text: caption })) {
+    try {
+      await navigator.share({ files: [file], text: caption });
+      return;
+    } catch (err) {
+      console.log('Share cancelled or failed:', err);
+    }
+  }
+  // Fallback: download the PNG and open WhatsApp link with caption only
+  const a = document.createElement('a');
+  a.href = pngDataUrl;
+  a.download = 'ie-invite-personalised.png';
+  a.click();
+  const url = `https://wa.me/?text=${encodeURIComponent(caption)}`;
+  window.open(url, '_blank');
+}
+updatePoster();
+</script>
+</body>
+</html>
